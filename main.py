@@ -8,10 +8,25 @@ import config
 class Cell(ttk.Button):
     def __init__(self, master):
         # define button styles
-        ttk.Style().configure(config.NORMAL_STYLE, background="white")
-        ttk.Style().configure(config.SWEEPED_STYLE, background="lightgreen")
-        ttk.Style().configure(config.MINE_STYLE, background="black")
-        ttk.Style().configure(config.FLAG_STYLE, background="red")
+        style = ttk.Style()
+        style.theme_use("alt")
+        style.configure(config.NORMAL_STYLE, background="white")
+        style.map(
+            config.NORMAL_STYLE,
+            background=[("active", "lightblue")],
+        )
+        style.map(
+            config.SWEEPED_STYLE,
+            background=[("disabled", "lightgreen")],
+            foreground=[("disabled", "black")],
+        )
+        style.map(config.FLAG_STYLE, outline=[("active", "none")])
+        style.map(
+            config.MINE_STYLE,
+            background=[("disabled", "red")],
+            foreground=[("disabled", "black")],
+        )
+        # style.configure(config.FLAG_STYLE)
         # transparent image to define button size
         self.image = utils.get_tk_image(None, config.ICON_SIZE)
         super().__init__(
@@ -53,10 +68,11 @@ class Cell(ttk.Button):
             # TODO: Game won
             print("You won!")
             Grid.disable()
+            Grid.show_mines()
 
         # if not surrounded by mines
         if mines == 0:
-            self.configure(text=None)
+            self.configure(text="")
             # open neighboring cells
             for neighbor in Grid.get_neighbors(self.coord):
                 Grid.at(neighbor).sweep()
@@ -67,6 +83,7 @@ class Cell(ttk.Button):
             self.image = utils.get_tk_image(config.MINE_ICON, config.ICON_SIZE)
             self.configure(style=config.MINE_STYLE, image=self.image)
             Grid.disable()
+            Grid.show_mines()
             # TODO: Game lost
         else:
             self.sweep()
@@ -151,6 +168,13 @@ class Grid:
             cell.unbind("<Button-1>")
             cell.unbind("<Button-3>")
             cell.state(["disabled"])
+
+    @staticmethod
+    def show_mines():
+        for cell in Grid.cells:
+            if cell.is_mine:
+                cell.image = utils.get_tk_image(config.MINE_ICON, config.ICON_SIZE)
+                cell.configure(style=config.MINE_STYLE, image=cell.image)
 
 
 class Window(Tk):

@@ -16,7 +16,6 @@ FLAG_STYLE = "Flag.TButton"
 MINE_STYLE = "Mine.TButton"
 
 # Images
-WINDOW_ICON = "bomb.ico"
-FLAG_ICON = "flag.png"
-MINE_ICON = "minesweeper.ico"
-SWEEPED_ICON = "green.png"
+WINDOW_ICON = "assets/bomb.ico"
+FLAG_ICON = "assets/flag.png"
+MINE_ICON = "assets/mine.png"
