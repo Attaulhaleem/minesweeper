@@ -103,15 +103,6 @@ class Grid:
         for cell in random.sample(Grid.cells, config.NUM_OF_MINES):
             cell.is_mine = True
 
-    # @staticmethod
-    # def sweeped_cells():
-    #     count = 0
-    #     for cell in Grid.cells:
-    #         if cell.is_sweeped:
-    #             count += 1
-    #     return count
-    #     # return len(list(filter(lambda c: c.is_sweeped, Grid.cells)))
-
     @staticmethod
     def get_sweeped_cells():
         return sum(1 for cell in Grid.cells if cell.is_sweeped)
