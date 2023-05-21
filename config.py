@@ -1,8 +1,8 @@
 WINDOW_TITLE = "Minesweeper"
 
 # Sizes
-ROWS = 8
-COLS = 8
+ROWS = 10
+COLS = 10
 NUM_OF_MINES = 10
 WIN_CELLS = ROWS * COLS - NUM_OF_MINES
 CELL_WIDTH = 2
