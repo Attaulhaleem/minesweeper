@@ -25,12 +25,6 @@ class Cell(ttk.Button):
         )
         # flag style
         style.configure(config.FLAG_STYLE, background="white", focuscolor="none")
-        # mine style
-        style.map(
-            config.MINE_STYLE,
-            background=[("disabled", "red")],
-            foreground=[("disabled", "black")],
-        )
         # transparent image to define button size
         self.image = utils.get_tk_image(None, config.ICON_SIZE)
         super().__init__(
@@ -70,6 +64,7 @@ class Cell(ttk.Button):
         if Grid.get_sweeped_cells() == config.WIN_CELLS:
             # TODO: Game won
             Grid.disable()
+            ttk.Style().map(config.MINE_STYLE, background=[("disabled", "teal")])
             Grid.show_mines()
 
         # if not surrounded by mines
@@ -85,6 +80,7 @@ class Cell(ttk.Button):
             self.image = utils.get_tk_image(config.MINE_ICON, config.ICON_SIZE)
             self.configure(style=config.MINE_STYLE, image=self.image)
             Grid.disable()
+            ttk.Style().map(config.MINE_STYLE, background=[("disabled", "red")])
             Grid.show_mines()
             # TODO: Game lost
         else:
@@ -199,7 +195,7 @@ class Window(Tk):
         return self.winfo_screenheight()
 
 
-class App:
+class Minesweeper:
     def __init__(self):
         self.window = Window()
         self.grid = Grid(self.window)
@@ -207,4 +203,4 @@ class App:
 
 
 if __name__ == "__main__":
-    app = App()
+    Minesweeper()

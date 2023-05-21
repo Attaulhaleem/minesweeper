@@ -1,4 +1,4 @@
-WINDOW_TITLE = "App"
+WINDOW_TITLE = "Minesweeper"
 
 # Sizes
 ROWS = 8
