@@ -9,24 +9,28 @@ class Cell(ttk.Button):
     def __init__(self, master):
         # define button styles
         style = ttk.Style()
+        # themes: "winnative", "clam", "alt", "default", "classic", "vista", "xpnative"
         style.theme_use("alt")
+        # normal style
         style.configure(config.NORMAL_STYLE, background="white")
         style.map(
             config.NORMAL_STYLE,
-            background=[("active", "lightblue")],
+            background=[("active", "#6EB1D6")],
         )
+        # sweeped style
         style.map(
             config.SWEEPED_STYLE,
             background=[("disabled", "lightgreen")],
             foreground=[("disabled", "black")],
         )
-        style.map(config.FLAG_STYLE, outline=[("active", "none")])
+        # flag style
+        style.configure(config.FLAG_STYLE, background="white", focuscolor="none")
+        # mine style
         style.map(
             config.MINE_STYLE,
             background=[("disabled", "red")],
             foreground=[("disabled", "black")],
         )
-        # style.configure(config.FLAG_STYLE)
         # transparent image to define button size
         self.image = utils.get_tk_image(None, config.ICON_SIZE)
         super().__init__(
@@ -62,11 +66,9 @@ class Cell(ttk.Button):
         self.configure(style=config.SWEEPED_STYLE, image=self.image, text=str(mines))
         # set status
         self.is_sweeped = True
-
-        print(Grid.get_sweeped_cells())
+        # if all cells sweeped
         if Grid.get_sweeped_cells() == config.WIN_CELLS:
             # TODO: Game won
-            print("You won!")
             Grid.disable()
             Grid.show_mines()
 
