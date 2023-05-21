@@ -48,9 +48,11 @@ class Cell(ttk.Button):
         # set status
         self.is_sweeped = True
 
-        if Grid.sweeped_cells == (config.ROWS * config.COLS) - config.NUM_OF_MINES:
+        print(Grid.get_sweeped_cells())
+        if Grid.get_sweeped_cells() == config.WIN_CELLS:
             # TODO: Game won
-            pass
+            print("You won!")
+            Grid.disable()
 
         # if not surrounded by mines
         if mines == 0:
@@ -64,6 +66,7 @@ class Cell(ttk.Button):
         if self.is_mine:
             self.image = utils.get_tk_image(config.MINE_ICON, config.ICON_SIZE)
             self.configure(style=config.MINE_STYLE, image=self.image)
+            Grid.disable()
             # TODO: Game lost
         else:
             self.sweep()
@@ -100,9 +103,18 @@ class Grid:
         for cell in random.sample(Grid.cells, config.NUM_OF_MINES):
             cell.is_mine = True
 
-    @property
-    def sweeped_cells(self):
-        return len(list(filter(lambda c: c.is_sweeped, Grid.cells)))
+    # @staticmethod
+    # def sweeped_cells():
+    #     count = 0
+    #     for cell in Grid.cells:
+    #         if cell.is_sweeped:
+    #             count += 1
+    #     return count
+    #     # return len(list(filter(lambda c: c.is_sweeped, Grid.cells)))
+
+    @staticmethod
+    def get_sweeped_cells():
+        return sum(1 for cell in Grid.cells if cell.is_sweeped)
 
     @staticmethod
     def count_neighboring_mines(coord):
@@ -141,6 +153,13 @@ class Grid:
         col = coord[1]
         index = (row * config.COLS) + col
         return Grid.cells[index]
+
+    @staticmethod
+    def disable():
+        for cell in Grid.cells:
+            cell.unbind("<Button-1>")
+            cell.unbind("<Button-3>")
+            cell.state(["disabled"])
 
 
 class Window(Tk):
