@@ -75,6 +75,13 @@ class Cell(ttk.Button):
                 Grid.at(neighbor).sweep()
 
     def on_left_click(self, event):
+        # change mine placement if first cell clicked is mine
+        if Grid.is_first_click and self.is_mine:
+            safe_cells = list(filter(lambda c: not c.is_mine, Grid.cells))
+            for cell in random.sample(safe_cells, 1):
+                cell.is_mine = True
+            self.is_mine = False
+
         # clicked on mine
         if self.is_mine:
             self.image = utils.get_tk_image(config.MINE_ICON, config.ICON_SIZE)
@@ -85,6 +92,8 @@ class Cell(ttk.Button):
             # TODO: Game lost
         else:
             self.sweep()
+
+        Grid.is_first_click = False
 
     def on_right_click(self, event):
         # toggle flag
@@ -103,6 +112,7 @@ class Cell(ttk.Button):
 
 class Grid:
     cells = list()
+    is_first_click = True
 
     def __init__(self, master):
         # populate the grid
