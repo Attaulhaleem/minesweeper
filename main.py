@@ -62,7 +62,7 @@ class Cell(ttk.Button):
         self.is_sweeped = True
         # if all cells sweeped
         if Grid.get_sweeped_cells() == config.WIN_CELLS:
-            # TODO: Game won
+            self.event_generate(config.GAME_WON_EVENT)  # game won!
             Grid.disable()
             ttk.Style().map(config.MINE_STYLE, background=[("disabled", "teal")])
             Grid.show_mines()
@@ -74,28 +74,28 @@ class Cell(ttk.Button):
             for neighbor in Grid.get_neighbors(self.coord):
                 Grid.at(neighbor).sweep()
 
-    def on_left_click(self, event):
-        # change mine placement if first cell clicked is mine
-        if Grid.is_first_click and self.is_mine:
+    def on_left_click(self, event=None):
+        if not self.is_mine:
+            # no mine on clicked cell
+            self.sweep()
+        elif Grid.is_first_click:
+            # change mine placement if first cell clicked is mine
             safe_cells = list(filter(lambda c: not c.is_mine, Grid.cells))
             for cell in random.sample(safe_cells, 1):
                 cell.is_mine = True
             self.is_mine = False
-
-        # clicked on mine
-        if self.is_mine:
+        else:
+            # clicked on mine (and not first click)
             self.image = utils.get_tk_image(config.MINE_ICON, config.ICON_SIZE)
             self.configure(style=config.MINE_STYLE, image=self.image)
             Grid.disable()
             ttk.Style().map(config.MINE_STYLE, background=[("disabled", "red")])
             Grid.show_mines()
-            # TODO: Game lost
-        else:
-            self.sweep()
+            self.event_generate(config.GAME_LOST_EVENT)  # game lost!
 
         Grid.is_first_click = False
 
-    def on_right_click(self, event):
+    def on_right_click(self, event=None):
         # toggle flag
         self.is_flagged = not self.is_flagged
         if self.is_flagged:
@@ -185,16 +185,33 @@ class Grid:
                 cell.configure(style=config.MINE_STYLE, image=cell.image)
 
 
-class Window(Tk):
+class StartScreen(ttk.Frame):
+    def __init__(self, master):
+        super().__init__(master)
+        Button(
+            self,
+            text="START",
+            command=lambda: master.show(GameScreen),
+        ).pack()
+
+
+class GameScreen(ttk.Frame):
+    def __init__(self, master):
+        super().__init__(master)
+        self.game_grid = Grid(self)
+
+
+class App(Tk):
     def __init__(self):
         super().__init__()
         self.title(config.WINDOW_TITLE)
         self.iconbitmap(config.WINDOW_ICON)
         self.resizable(False, False)
-        try:
-            self.state("zoomed")  # works on Windows and macOS
-        except:
-            self.attributes("-zoomed", True)  # works on Linux
+        self.maximize()
+        self._screen = None  # keep track of current screen shown
+        self.show(GameScreen)
+        self.bind(config.GAME_LOST_EVENT, self.handle_game_lost)
+        self.bind(config.GAME_WON_EVENT, self.handle_game_won)
 
     @property
     def width(self):
@@ -204,13 +221,25 @@ class Window(Tk):
     def height(self):
         return self.winfo_screenheight()
 
+    def maximize(self):
+        try:
+            self.state("zoomed")  # works on Windows and macOS
+        except:
+            self.attributes("-zoomed", True)  # works on Linux
 
-class Minesweeper:
-    def __init__(self):
-        self.window = Window()
-        self.grid = Grid(self.window)
-        self.window.mainloop()
+    def show(self, screen):
+        if self._screen is not None:
+            self._screen.destroy()
+        self._screen = screen(self)
+        self._screen.pack()
+
+    def handle_game_lost(self, event=None):
+        self.after(1000, self.show, GameScreen)  # Show StartScreen after 1 second
+
+    def handle_game_won(self, event=None):
+        self.show(StartScreen)
 
 
 if __name__ == "__main__":
-    Minesweeper()
+    app = App()
+    app.mainloop()

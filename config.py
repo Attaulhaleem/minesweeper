@@ -19,3 +19,7 @@ MINE_STYLE = "Mine.TButton"
 WINDOW_ICON = "assets/bomb.ico"
 FLAG_ICON = "assets/flag.png"
 MINE_ICON = "assets/mine.png"
+
+# Events
+GAME_WON_EVENT = "<<GameWon>>"
+GAME_LOST_EVENT = "<<GameLost>>"
