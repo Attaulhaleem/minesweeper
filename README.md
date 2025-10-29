@@ -12,6 +12,11 @@ pip install -r requirements.txt
 python3 main.py
 ````
 
+## Controls
+
+- `Left Click` to open a cell.
+- `Middle Mouse Button` to place a flag.
+
 ## Gameplay
 
 <p align="center">
